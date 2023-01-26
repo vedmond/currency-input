@@ -1,14 +1,11 @@
 import * as React from 'react';
 import TextField from '@mui/material/TextField';
-
 import InputAdornment from '@mui/material/InputAdornment';
-
 import { useState } from 'react';
-
 import './App.css';
 
 function App() {
-  const entryPrice = 5;
+  const entryPrice = 5; // входящее значение в центах
 
   const inputFieldFormatting = (entryValue) => {
     return entryValue === 0 ? '0.00' : `${(entryValue / 100).toFixed(2).toString()}`;
@@ -17,31 +14,31 @@ function App() {
   const priceHandler = (e) => {
     const reg = /[^0-9.]/;
     let currentlyValue = e.target.value.replace(reg, '');
-    const valueArray = currentlyValue.split('');
-    if (valueArray[valueArray.length - 1] === '.') {
-      for (let i = 0; i < valueArray.length - 1; i++) {
-        if (valueArray[i] === '.') {
-          valueArray.pop();
-          currentlyValue = valueArray.join('');
-          setPrice(currentlyValue);
-          console.log('valueArray1 =', valueArray);
-          return;
-        }
-      }
+    let valueArray = currentlyValue.split('');
+    const filterArray = valueArray.filter((elem) => elem === '.');
+    if (filterArray.length === 1 && valueArray.length === 1) {
+      valueArray = ['0', ...valueArray, '0'];
     }
-    // const indexPoint = valueArray.length - 3;
+    if (filterArray.length > 1) {
+      valueArray.splice(valueArray.indexOf('.'), 1);
+      valueArray.indexOf('.') === valueArray.length - 1
+        ? (valueArray = [...valueArray, '0', '0'])
+        : (valueArray = [...valueArray]);
+    }
     if (valueArray.length - 1 > valueArray.indexOf('.') + 2 && valueArray.indexOf('.') !== -1) {
-      console.log('valueArray.indexOf =', valueArray.indexOf('.'));
       valueArray.pop();
-      console.log('if1');
+    }
+    if (valueArray[0] === '0' && valueArray[1] !== '.') {
+      valueArray.shift();
     }
     currentlyValue = valueArray.join('');
-    setPrice(currentlyValue);
-    console.log('valueArray2 =', valueArray);
-    const numberCent = Number((Number(valueArray.join('')) * 100).toFixed());
 
-    console.log('numberCent =', numberCent);
+    setPrice(currentlyValue);
+    // const numberCent = Number((Number(valueArray.join('')) * 100).toFixed());
+    // исходящее в центах
+    return;
   };
+
   return (
     <div className="App">
       <TextField
